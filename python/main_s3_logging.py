@@ -17,7 +17,7 @@ def my_function():
 	
 	#s3 log path
 	timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
-	s3_log_path = "s3://logs-create/python_s3_loggger_demo/{0}/".format(timestamp)
+	s3_log_path = "s3://extensionlogs/python_s3_loggger_demo/{0}/".format(timestamp)
 	try:
 		#do any task
 		logger.info("Running my_function")
