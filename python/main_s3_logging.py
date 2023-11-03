@@ -18,8 +18,8 @@ def my_function():
 	
 	#s3 log path
 	timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
-	s3_buck = "hub-cg-sbx01-ue1-apps02"
-	s3_log_path = f"s3://{s3_buck}/python_s3_logger_demo/{timestamp}/"
+	s3_buck = "extensionlogs"
+	s3_log_path = f"s3://{s3_buck}/python_logger/{timestamp}/"
 
 	try:
 		#do any task
