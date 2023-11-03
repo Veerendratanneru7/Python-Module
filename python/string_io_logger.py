@@ -5,7 +5,7 @@ def get_string_io_logger(log_stringio_obj, logger_name):
 	#create logger
 	logger = logging.getLogger(logger_name)
 	formatter = logging.Formatter("%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s")	
-	logger.setLevel(logging.INFO)
+	logger.setLevel(logging.DEBUG)
 
 	#add normal steam handler to display logs on screen
 	io_log_handler = logging.StreamHandler()
