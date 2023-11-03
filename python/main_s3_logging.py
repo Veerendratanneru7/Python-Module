@@ -24,6 +24,7 @@ def my_function():
 	try:
 		#do any task
 		logger.info("Running my_function")
+		logger.info("two")
 		
 	except Exception as e:
 		exception_message = "message: {0}\nline no:{1}\n".format(str(e),sys.exc_info()[2].tb_lineno)
