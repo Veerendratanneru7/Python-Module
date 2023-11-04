@@ -32,21 +32,14 @@ def get_string_io_logger(log_stringio_obj, logger_name):
 
 def store_logs_in_s3(log_stringio_obj):
     timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-    s3_bucket = "extensionlogs"
-    s3_log_path = f"s3://{s3_bucket}/python-log/{timestamp}/"
-    
-    # Store log content in S3
-    s3_store_response = put_content_to_s3(s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue())
-    
-    return s3_store_response
+    s3_buck = "extensionlogs"
+    s3_log_path = f"s3://{s3_buck}/python-lambda/{timestamp}/"
+    s3_store_response = put_content_to_s3(
+        s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
+    )
+    return log_stringio_obj.getvalue()
 
     # Create a StringIO object as a string buffer
 log_stringio_obj = io.StringIO()
 log_handler = logging.StreamHandler(log_stringio_obj)
 logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
-timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-s3_bucket = "extensionlogs"
-s3_log_path = f"s3://{s3_bucket}/pythonlog/{timestamp}/"
-    
-# Store log content in S3
-s3_store_response = put_content_to_s3(s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue())
