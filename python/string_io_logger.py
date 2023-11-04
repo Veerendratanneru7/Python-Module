@@ -42,6 +42,5 @@ def store_logs_in_s3(log_stringio_obj):
 
     # Create a StringIO object as a string buffer
 log_stringio_obj = io.StringIO()
-
-    # Configure the logger
+log_handler = logging.StreamHandler(log_stringio_obj)
 logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
