@@ -32,14 +32,14 @@ def get_string_io_logger(log_stringio_obj, logger_name):
 
 
 def get_logs(log_stringio_obj):
-    return log_stringio_obj.getvalue()
     timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
     s3_buck = "extensionlogs"
     s3_log_path = f"s3://{s3_buck}/python-lambda/{timestamp}/"
     s3_store_response = put_content_to_s3(
         s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
     )
-
+    return log_stringio_obj.getvalue()
+    
 
 # create string i/o object as string buffer
 log_stringio_obj = io.StringIO()
