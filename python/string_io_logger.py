@@ -45,6 +45,4 @@ def get_logs(log_stringio_obj):
 log_stringio_obj = io.StringIO()
 log_handler = logging.StreamHandler(log_stringio_obj)
 logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
-timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-s3_buck = "extensionlogs"
-s3_log_path = f"s3://{s3_buck}/python-log/{timestamp}/"
+return logger
