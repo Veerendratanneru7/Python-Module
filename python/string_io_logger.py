@@ -40,28 +40,8 @@ def store_logs_in_s3(log_stringio_obj):
     
     return s3_store_response
 
-
-def main():
     # Create a StringIO object as a string buffer
-    log_stringio_obj = io.StringIO()
+log_stringio_obj = io.StringIO()
 
     # Configure the logger
-    logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
-
-    try:
-        # Perform any tasks and log messages
-        logger.info("Running my_function")
-        logger.info("two")
-
-    except Exception as e:
-        exception_message = f"message: {str(e)}\nline no: {sys.exc_info()[2].tb_lineno}\n"
-        logger.error(exception_message)
-
-    finally:
-        # Persist logs in S3
-        s3_store_response = store_logs_in_s3(log_stringio_obj)
-        assert s3_store_response["success"], f"Error Putting logs to S3:\n{s3_store_response['data']}"
-
-
-if __name__ == "__main__":
-    main()
+logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
