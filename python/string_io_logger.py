@@ -51,4 +51,3 @@ s3_log_path = f"s3://{s3_buck}/python-1/{timestamp}/"
 s3_store_response = put_content_to_s3(
 s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
     )
-return logger
