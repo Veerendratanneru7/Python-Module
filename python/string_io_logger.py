@@ -28,8 +28,7 @@ def get_string_io_logger(log_stringio_obj, logger_name):
 	return logger
 	
 def get_logs(log_stringio_obj):
-    	# Return the log messages captured in the buffer
-    	return log_stringio_obj.getvalue()
+	return log_stringio_obj.getvalue()
     	timestamp = datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
 	s3_buck = "extensionlogs"
 	s3_log_path = f"s3://{s3_buck}/python-lambda/{timestamp}/"	
