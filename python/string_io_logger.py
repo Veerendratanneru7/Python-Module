@@ -38,3 +38,6 @@ def store_logs_in_s3(log_stringio_obj):
         s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
     )
     return log_stringio_obj.getvalue()
+log_stringio_obj = io.StringIO()
+log_handler = logging.StreamHandler(log_stringio_obj)
+logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
