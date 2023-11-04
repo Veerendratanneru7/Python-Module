@@ -48,6 +48,12 @@ logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
 s3_buck = "extensionlogs"
 s3_log_path = f"s3://{s3_buck}/python-1/{timestamp}/"
-s3_store_response = put_content_to_s3(
-s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
+try:
+    s3_store_response = put_content_to_s3(
+        s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
     )
+except Exception as e:
+    exception_message = "message: {0}\nline no:{1}\n".format(
+        str(e), sys.exc_info()[2].tb_lineno
+    )
+    logger.error(exception_message)
