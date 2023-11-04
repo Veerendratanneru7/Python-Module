@@ -8,23 +8,22 @@ from put_content_to_s3 import put_content_to_s3
 
 
 def get_string_io_logger(log_stringio_obj, logger_name):
-    # Create logger
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
     )
     logger.setLevel(logging.DEBUG)
 
-    # Add a stream handler to display logs on the console
-    console_log_handler = logging.StreamHandler()
-    console_log_handler.setFormatter(formatter)
-    logger.addHandler(console_log_handler)
+    # add normal steam handler to display logs on screen
+    io_log_handler = logging.StreamHandler()
+    io_log_handler.setFormatter(formatter)
+    logger.addHandler(io_log_handler)
 
-    # Create a stream handler and initialize it with the log_stringio_obj buffer
+    # create stream handler and initialise it with string io buffer
     string_io_log_handler = logging.StreamHandler(log_stringio_obj)
     string_io_log_handler.setFormatter(formatter)
 
-    # Add the string_io_log_handler to the logger
+    # add stream handler to logger
     logger.addHandler(string_io_log_handler)
 
     return logger
