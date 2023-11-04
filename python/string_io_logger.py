@@ -26,6 +26,10 @@ def get_string_io_logger(log_stringio_obj, logger_name):
 	logger.addHandler(string_io_log_handler)
 
 	return logger
+	
+def get_logs(log_stringio_obj):
+    # Return the log messages captured in the buffer
+    return log_stringio_obj.getvalue()
 
 #create string i/o object as string buffer
 log_stringio_obj = io.StringIO()
