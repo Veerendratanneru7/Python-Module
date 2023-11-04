@@ -41,14 +41,6 @@ def store_logs_in_s3(log_stringio_obj):
 log_stringio_obj = io.StringIO()
 log_handler = logging.StreamHandler(log_stringio_obj)
 logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
-try:
-    # do any task
-
-except Exception as e:
-    exception_message = "message: {0}\nline no:{1}\n".format(
-        str(e), sys.exc_info()[2].tb_lineno
-    )
-    logger.error(exception_message)
 
 finally:
     assert s3_store_response["success"], "Error Putting logs to S3:\n{0}".format(
