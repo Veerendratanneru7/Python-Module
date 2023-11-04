@@ -14,17 +14,17 @@ class S3LogHandler(logging.Handler):
         self.s3_prefix = s3_prefix
         self.log_file = None  # Initialize log_file to None
 
-    def open_log_file(self, timestamp):
+    def open_log_file(self):
+        timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
         self.log_file = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
 
     def emit(self, record):
         if self.log_file is None:
-            timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-            self.open_log_file(timestamp)
+            self.open_log_file()
 
         log_entry = self.format(record)
         put_content_to_s3(self.log_file, log_entry)
-
+        
 def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
