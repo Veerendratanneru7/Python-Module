@@ -27,8 +27,3 @@ log_stringio_obj = io.StringIO()
 #create stream log handler with string i/o buffer
 log_handler = logging.StreamHandler(log_stringio_obj)
 logger = get_string_io_logger(log_stringio_obj, logger_name='my_s3_logger')
-
-logger.info("this log goes to string i/o buffer....")
-
-#get log from string i/o buffer
-print("This is the logs stored in string i/o buffer:\n{0}".format(log_stringio_obj.getvalue()))
