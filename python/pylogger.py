@@ -12,22 +12,18 @@ class S3LogHandler(logging.Handler):
         super().__init__()
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
-        self.log_entries = []  # Store log entries in a list
+        self.log_file = None  # Initialize log_file to None
+
+    def open_log_file(self, timestamp):
+        self.log_file = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
 
     def emit(self, record):
-        log_entry = self.format(record)
-        self.log_entries.append(log_entry)
-
-    def flush_to_s3(self):
-        if self.log_entries:
-            # Combine all log entries into a single string
-            log_content = '\n'.join(self.log_entries)
+        if self.log_file is None:
             timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-            s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
-            put_content_to_s3(s3_log_path, log_content)
+            self.open_log_file(timestamp)
 
-    def close(self):
-        self.flush_to_s3()
+        log_entry = self.format(record)
+        put_content_to_s3(self.log_file, log_entry)
 
 def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     logger = logging.getLogger(logger_name)
