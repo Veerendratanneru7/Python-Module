@@ -39,3 +39,8 @@ def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     logger.addHandler(s3_handler)
 
     return logger
+
+log_stringio_obj = io.StringIO()
+log_handler = logging.StreamHandler(log_stringio_obj)
+logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
+timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
