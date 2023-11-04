@@ -8,7 +8,7 @@ from datetime import datetime
 from put_content_to_s3 import put_content_to_s3
 
 class S3LogHandler(logging.Handler):
-    def __init__(self, s3_bucket, s3_prefix):
+    def __init__(self, s3_bucket):
         super().__init__()
         self.s3_bucket ="extensionlogs"
 
@@ -18,7 +18,7 @@ class S3LogHandler(logging.Handler):
         s3_log_path = f"s3://extensionlogs/python-lambda/{timestamp}/logs.txt"
         put_content_to_s3(s3_log_path, log_entry)
 
-def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
+def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket):
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
@@ -42,5 +42,5 @@ def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
 
 log_stringio_obj = io.StringIO()
 log_handler = logging.StreamHandler(log_stringio_obj)
-logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
+logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger", s3_bucket)
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
