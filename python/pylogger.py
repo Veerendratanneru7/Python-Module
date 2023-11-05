@@ -7,6 +7,16 @@ from datetime import datetime
 
 from put_content_to_s3 import put_content_to_s3
 
+class S3LogHandler(logging.Handler):
+    def get_logs(log_stringio_obj):
+    timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
+    s3_buck = "extensionlogs"
+    s3_log_path = f"s3://{s3_buck}/python-lambda/{timestamp}/"
+    s3_store_response = put_content_to_s3(
+        s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
+    )
+    print ("2")
+    return log_stringio_obj.getvalue()  
 
 def get_string_io_logger(log_stringio_obj, logger_name):
     # create logger
