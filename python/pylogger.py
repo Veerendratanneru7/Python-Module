@@ -13,6 +13,7 @@ class S3LogHandler(logging.Handler):
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
         self.log_file = None
+        self.emit_count = 0  # Add an emit count variable
         self.open_log_file()
 
     def open_log_file(self):
@@ -20,11 +21,13 @@ class S3LogHandler(logging.Handler):
         self.log_file = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
 
     def emit(self, record):
+        self.emit_count += 1  # Increment the emit count
         if self.log_file is None:
             self.open_log_file()
 
         log_entry = self.format(record)
         put_content_to_s3(self.log_file, log_entry)
+        print(f"Emitted log entry #{self.emit_count} to S3: {log_entry}")
         
 def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     logger = logging.getLogger(logger_name)
