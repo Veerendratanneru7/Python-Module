@@ -12,7 +12,8 @@ class S3LogHandler(logging.Handler):
         super().__init__()
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
-        self.log_file = None  # Initialize log_file to None
+        self.log_file = None
+        self.open_log_file()
 
     def open_log_file(self):
         timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
