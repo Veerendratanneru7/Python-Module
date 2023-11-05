@@ -7,15 +7,6 @@ from datetime import datetime
 
 from put_content_to_s3 import put_content_to_s3
 
-def get_logs(log_stringio_obj):
-    timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-    s3_buck = "extensionlogs"
-    s3_log_path = f"s3://{s3_buck}/python-lambda/{timestamp}/"
-    s3_store_response = put_content_to_s3(
-        s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
-    )
-    return log_stringio_obj.getvalue()
-
 
 def get_string_io_logger(log_stringio_obj, logger_name):
     # create logger
@@ -40,8 +31,29 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     return logger
 
 
+def get_logs(log_stringio_obj):
+    timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
+    s3_buck = "extensionlogs"
+    s3_log_path = f"s3://{s3_buck}/python-lambda/{timestamp}/"
+    s3_store_response = put_content_to_s3(
+        s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
+    )
+    return log_stringio_obj.getvalue()
+    
+
 # create string i/o object as string buffer
 log_stringio_obj = io.StringIO()
 log_handler = logging.StreamHandler(log_stringio_obj)
 logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
+
+def lambda_handler(event, context):
+    # Your Lambda function logic goes here
+
+    # Call get_logs to push logs to S3
+    log_content = get_logs(log_stringio_obj)
+
+    return {
+        "statusCode": 200,
+        "body": log_content
+    }
