@@ -39,13 +39,13 @@ def upload_logs_to_s3():
         s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
     )
 
-# Register a handler to automatically upload logs to S3 when the Lambda function exits
-atexit.register(upload_logs_to_s3)
-
-# Ensure that the S3 upload happens even if the Lambda function is abruptly terminated
-import atexit
-
-def upload_logs_on_exit():
+# Define a cleanup function to upload logs when the Lambda function exits
+def cleanup():
     upload_logs_to_s3()
 
-atexit.register(upload_logs_on_exit)
+# Import the `atexit` module if available
+try:
+    import atexit
+    atexit.register(cleanup)
+except ImportError:
+    pass
