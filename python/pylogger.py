@@ -37,9 +37,8 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     # add stream handler to logger
     logger.addHandler(string_io_log_handler)
     print("1")
-    s3_handler = S3LogHandler("extensionlogs", "python-lambda")
-    s3_handler.setFormatter(formatter)
-    logger.addHandler(s3_handler)
+    S3LogHandler.setFormatter(formatter)
+    logger.addHandler(S3LogHandler)
 
     return logger
 
