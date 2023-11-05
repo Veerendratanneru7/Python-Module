@@ -4,48 +4,49 @@ import sys
 import logging
 import time
 from datetime import datetime
+
 from put_content_to_s3 import put_content_to_s3
 
-# Create a string i/o object as a string buffer
-log_stringio_obj = io.StringIO()
+class S3LogHandler(logging.Handler):
+    def __init__(self, s3_bucket, s3_prefix):
+        super().__init__()
+        self.s3_bucket = s3_bucket
+        self.s3_prefix = s3_prefix
+        self.log_file = None  # Initialize log_file to None
 
-# Create the logger
-logger = logging.getLogger("my_s3_logger")
-formatter = logging.Formatter(
-    "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
-)
-logger.setLevel(logging.DEBUG)
+    def open_log_file(self):
+        timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
+        self.log_file = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
 
-# Add a normal stream handler to display logs on the screen
-io_log_handler = logging.StreamHandler()
-io_log_handler.setFormatter(formatter)
-logger.addHandler(io_log_handler)
+    def emit(self, record):
+        if self.log_file is None:
+            self.open_log_file()
 
-# Create a stream handler and initialize it with the string io buffer
-string_io_log_handler = logging.StreamHandler(log_stringio_obj)
-string_io_log_handler.setFormatter(formatter)
-
-# Add the stream handler to the logger
-logger.addHandler(string_io_log_handler)
-
-# Set up S3 upload settings
-timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-s3_bucket = "extensionlogs"
-s3_log_path = f"s3://{s3_bucket}/python-lambda/{timestamp}/"
-
-# Function to automatically upload logs to S3
-def upload_logs_to_s3():
-    s3_store_response = put_content_to_s3(
-        s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
+        log_entry = self.format(record)
+        put_content_to_s3(self.log_file, log_entry)
+        
+def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
+    logger = logging.getLogger(logger_name)
+    formatter = logging.Formatter(
+        "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
     )
+    logger.setLevel(logging.DEBUG)
 
-# Define a cleanup function to upload logs when the Lambda function exits
-def cleanup():
-    upload_logs_to_s3()
+    io_log_handler = logging.StreamHandler()
+    io_log_handler.setFormatter(formatter)
+    logger.addHandler(io_log_handler)
 
-# Import the `atexit` module if available
-try:
-    import atexit
-    atexit.register(cleanup)
-except ImportError:
-    pass
+    string_io_log_handler = logging.StreamHandler(log_stringio_obj)
+    string_io_log_handler.setFormatter(formatter)
+    logger.addHandler(string_io_log_handler)
+
+    # Add the custom S3 handler to automatically flush logs to S3
+    s3_handler = S3LogHandler(s3_bucket, s3_prefix)
+    s3_handler.setFormatter(formatter)
+    logger.addHandler(s3_handler)
+
+    return logger
+
+log_stringio_obj = io.StringIO()
+logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", "extensionlogs", "python-lambda")
+timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
