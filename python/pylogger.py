@@ -17,7 +17,7 @@ class S3LogHandler(logging.Handler):
         )
         print ("5") 
 
-def get_string_io_logger(log_stringio_obj, logger_name):
+def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     # create logger
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
