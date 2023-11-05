@@ -9,13 +9,9 @@ from put_content_to_s3 import put_content_to_s3
 
 def get_string_io_logger(log_stringio_obj, logger_name):
     logger = logging.getLogger(logger_name)
-    #formatter = logging.Formatter(
-        "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
-    )
     logger.setLevel(logging.DEBUG)
 
     io_log_handler = logging.StreamHandler()
-    #io_log_handler.setFormatter(formatter)
     logger.addHandler(io_log_handler)
 
     string_io_log_handler = logging.StreamHandler(log_stringio_obj)
