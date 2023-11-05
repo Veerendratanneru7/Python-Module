@@ -29,6 +29,9 @@ def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
 
     return logger
 
+log_stringio_obj = io.StringIO()
+logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", "extensionlogs", "python-lambda")
+timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
 class S3LogHandler(logging.Handler):
     def __init__(self, s3_bucket, s3_prefix):
         super().__init__()
@@ -40,8 +43,3 @@ class S3LogHandler(logging.Handler):
         timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
         s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
         put_content_to_s3(s3_log_path, log_entry)
-
-
-log_stringio_obj = io.StringIO()
-logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", "extensionlogs", "python-lambda")
-timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
