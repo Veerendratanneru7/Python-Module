@@ -15,8 +15,7 @@ class S3LogHandler(logging.Handler):
     s3_store_response = put_content_to_s3(
         s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
     )
-    print ("2")
-    return log_stringio_obj.getvalue()  
+    print ("2") 
 
 def get_string_io_logger(log_stringio_obj, logger_name):
     # create logger
