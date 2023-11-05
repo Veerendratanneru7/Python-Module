@@ -7,50 +7,42 @@ from datetime import datetime
 
 from put_content_to_s3 import put_content_to_s3
 
-class S3LogHandler(logging.Handler):
-    def __init__(self, s3_bucket, s3_prefix):
-        super().__init__()
-        self.s3_bucket = s3_bucket
-        self.s3_prefix = s3_prefix
-        self.log_entries = []
-        self.log_file = None
 
-    def emit(self, record):
-        log_entry = self.format(record)
-        self.log_entries.append(log_entry)
-
-    def close(self):
-        if self.log_entries:
-            log_content = '\n'.join(self.log_entries)
-            self.open_log_file()
-            put_content_to_s3(self.log_file, log_content)
-
-    def open_log_file(self):
-        if self.log_file is None:
-            self.log_file = f"s3://{self.s3_bucket}/{self.s3_prefix}/logs.txt"
-        
-def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
+def get_string_io_logger(log_stringio_obj, logger_name):
+    # create logger
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
     )
     logger.setLevel(logging.DEBUG)
 
+    # add normal steam handler to display logs on screen
     io_log_handler = logging.StreamHandler()
     io_log_handler.setFormatter(formatter)
     logger.addHandler(io_log_handler)
 
+    # create stream handler and initialise it with string io buffer
     string_io_log_handler = logging.StreamHandler(log_stringio_obj)
     string_io_log_handler.setFormatter(formatter)
-    logger.addHandler(string_io_log_handler)
 
-    # Add the custom S3 handler to automatically flush logs to S3
-    s3_handler = S3LogHandler(s3_bucket, s3_prefix)
-    s3_handler.setFormatter(formatter)
-    logger.addHandler(s3_handler)
+    # add stream handler to logger
+    logger.addHandler(string_io_log_handler)
 
     return logger
 
-log_stringio_obj = io.StringIO()
-logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", "extensionlogs", "python-lambda")
+
+def get_logs(log_stringio_obj):
+    timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
+    s3_buck = "extensionlogs"
+    s3_log_path = f"s3://{s3_buck}/python-lambda/{timestamp}/"
+    s3_store_response = put_content_to_s3(
+        s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
+    )
+    return log_stringio_obj.getvalue()
+    
+
+# create string i/o object as string buffer
+log_stringio_obj = io.StringIO(write_through=True)
+log_handler = logging.StreamHandler(log_stringio_obj)
+logger = get_string_io_logger(log_stringio_obj, logger_name="my_s3_logger")
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
