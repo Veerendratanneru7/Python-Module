@@ -7,19 +7,6 @@ from datetime import datetime
 
 from put_content_to_s3 import put_content_to_s3
 
-class S3LogHandler(logging.Handler):
-    def __init__(self, s3_bucket, s3_prefix):
-        super().__init__()
-        self.s3_bucket = s3_bucket
-        self.s3_prefix = s3_prefix
-
-    def emit(self, record):
-        log_entry = self.format(record)
-        timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-        s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
-        s3_store_response = put_content_to_s3(
-        s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
-        )
 
 def get_string_io_logger(log_stringio_obj, logger_name):
     logger = logging.getLogger(logger_name)
@@ -35,12 +22,11 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     string_io_log_handler = logging.StreamHandler(log_stringio_obj)
     string_io_log_handler.setFormatter(formatter)
     logger.addHandler(string_io_log_handler)
-
-    # Add the custom S3 handler to automatically flush logs to S3
-    s3_handler = S3LogHandler("extensionlogs", "python-veeru")
-    s3_handler.setFormatter(formatter)
-    logger.addHandler(s3_handler)
-
+    timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
+        s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
+        s3_store_response = put_content_to_s3(
+        s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
+        )
     return logger
 
 log_stringio_obj = io.StringIO()
