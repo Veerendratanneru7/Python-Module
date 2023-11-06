@@ -8,7 +8,7 @@ from datetime import datetime
 from put_content_to_s3 import put_content_to_s3
 
 
-def get_string_io_logger(log_stringio_obj='io.StringIO()', logger_name):
+def get_string_io_logger(log_stringio_obj='io.StringIO()', logger_name='my_s3_logger'):
     # create logger
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
