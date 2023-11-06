@@ -35,7 +35,6 @@ def get_content_from_s3(s3_path, s3_client=None, s3_resource=None, region_name='
         key = '/'.join(s3_path.split('/')[3:])
         if not s3_client:
             s3_client_ = boto3.client('s3', region_name)
-	print("Hi")
         else:
             s3_client_ = s3_client
         s3_get_response = s3_client_.get_object(Bucket=bucket, Key=key)
