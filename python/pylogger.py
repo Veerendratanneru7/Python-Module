@@ -12,13 +12,23 @@ class S3LogHandler(logging.Handler):
         super().__init__()
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
+        self.log_entries = []
+        self.log_file = None
 
     def emit(self, record):
         log_entry = self.format(record)
-        timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-        s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
-        put_content_to_s3(s3_log_path, log_entry)
+        self.log_entries.append(log_entry)
 
+    def close(self):
+        if self.log_entries:
+            log_content = '\n'.join(self.log_entries)
+            self.open_log_file()
+            put_content_to_s3(self.log_file, log_content)
+
+    def open_log_file(self):
+        if self.log_file is None:
+            self.log_file = f"s3://{self.s3_bucket}/{self.s3_prefix}/logs.txt"
+        
 def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
@@ -42,5 +52,5 @@ def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     return logger
 
 log_stringio_obj = io.StringIO()
-logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", "extensionlogs", "python-veeru")
+logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", "extensionlogs", "python-lambda")
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
