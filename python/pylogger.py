@@ -26,8 +26,7 @@ class S3LogHandler(logging.Handler):
 
         log_entry = self.format(record)
         put_content_to_s3(self.log_file, log_entry)
-        result = get_content_from_s3(self.log_file, "boto3.client('s3', region_name='us-east-1')")
-        print (result)
+        get_content_from_s3(self.log_file, log_entry)
         
 def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     logger = logging.getLogger(logger_name)
