@@ -23,7 +23,7 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     # add stream handler to logger
     logger.addHandler(string_io_log_handler)
 
-    return logger
+    #return logger
 
 
 def get_logs(log_stringio_obj):
