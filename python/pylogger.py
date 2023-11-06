@@ -21,7 +21,7 @@ class S3LogHandler(logging.Handler):
         s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
         )
 
-def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
+def get_string_io_logger(log_stringio_obj, logger_name):
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
@@ -37,12 +37,12 @@ def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     logger.addHandler(string_io_log_handler)
 
     # Add the custom S3 handler to automatically flush logs to S3
-    s3_handler = S3LogHandler(s3_bucket, s3_prefix)
+    s3_handler = S3LogHandler("extensionlogs", "python-veeru")
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
 
     return logger
 
 log_stringio_obj = io.StringIO()
-logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", "extensionlogs", "python-veeru")
+logger = get_string_io_logger(log_stringio_obj, "my_s3_logger")
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
