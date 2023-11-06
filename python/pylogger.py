@@ -19,6 +19,7 @@ class S3LogHandler(logging.Handler):
     def open_log_file(self):
         timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
         self.log_file = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
+        get_content_from_s3(self.log_file)
 
     def emit(self, record):
         if self.log_file is None:
