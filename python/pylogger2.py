@@ -38,7 +38,8 @@ def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     s3_handler = S3LogHandler(s3_bucket, s3_prefix)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
-
+    print("content of logger:")
+    print(logger)
     return logger
 
 log_stringio_obj = io.StringIO()
