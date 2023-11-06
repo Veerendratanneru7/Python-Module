@@ -38,7 +38,7 @@ def get_content_from_s3(s3_path, content, s3_client=None, s3_resource=None, regi
 		else:
 			s3_client_ = s3_client
 			s3_get_response = s3_client_.get_object(Bucket=bucket, Key=key)
-            		content = s3_get_response['Body'].read().decode('utf-8')
+			content = s3_get_response['Body'].read().decode('utf-8')
 		if s3_get_response['ResponseMetadata']['HTTPStatusCode']!=200:
 			raise Exception('Unable to put data to s3: {0}'.format(s3_put_response))		
 	except Exception as e:
