@@ -23,7 +23,6 @@ class S3LogHandler(logging.Handler):
     def emit(self, record):
         if self.log_file is None:
             self.open_log_file()
-            print(self.open_log_file())
 
         log_entry = self.format(record)
         print(log_entry)
@@ -48,7 +47,7 @@ def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     s3_handler = S3LogHandler(s3_bucket, s3_prefix)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
-
+    print(logger.addHandler(s3_handler)) 
     return logger
 
 log_stringio_obj = io.StringIO()
