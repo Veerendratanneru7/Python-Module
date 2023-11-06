@@ -25,7 +25,7 @@ class S3LogHandler(logging.Handler):
             self.open_log_file()
 
         log_entry = self.format(record)
-        
+        print(log_entry)        
         put_content_to_s3(self.log_file, log_entry)
         
 def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
