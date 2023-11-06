@@ -30,8 +30,7 @@ def get_string_io_logger(log_stringio_obj, logger_name):
         s3_store_response = put_content_to_s3(
             s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
         )
-    finally:
-	return log_stringio_obj.getvalue()
+	    
 log_stringio_obj = io.StringIO()
 logger = get_string_io_logger(log_stringio_obj, "my_s3_logger")
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
