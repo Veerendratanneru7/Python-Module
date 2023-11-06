@@ -24,13 +24,13 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     logger.addHandler(string_io_log_handler)
     timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
     return logger
-    try:
-        s3_buck = "extensionlogs"
-        s3_log_path = f"s3://{s3_buck}/python-lambda/{timestamp}/"
-        s3_store_response = put_content_to_s3(
-            s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
-        )
 	    
 log_stringio_obj = io.StringIO()
 logger = get_string_io_logger(log_stringio_obj, "my_s3_logger")
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
+try:
+	s3_buck = "extensionlogs"
+        s3_log_path = f"s3://{s3_buck}/python-lambda/{timestamp}/"
+        s3_store_response = put_content_to_s3(
+            s3_path=s3_log_path + "logs.txt", content=log_stringio_obj.getvalue()
+        )
