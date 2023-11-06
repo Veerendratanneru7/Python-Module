@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 
 from put_content_to_s3 import put_content_to_s3
+from put_content_to_s3 import get_content_from_s3
 
 class S3LogHandler(logging.Handler):
     def __init__(self, s3_bucket, s3_prefix):
@@ -24,6 +25,8 @@ class S3LogHandler(logging.Handler):
 
         log_entry = self.format(record)
         put_content_to_s3(self.log_file, log_entry)
+        test = get_content_from_s3(self.log_file, log_entry)
+        print test
         
 def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     logger = logging.getLogger(logger_name)
