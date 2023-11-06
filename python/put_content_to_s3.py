@@ -37,9 +37,9 @@ def get_content_from_s3(s3_path, s3_client=None, s3_resource=None, region_name='
             s3_client_ = boto3.client('s3', region_name)
         else:
             s3_client_ = s3_client
-		s3_get_response = s3_client_.get_object(Bucket=bucket, Key=key)
-		content = s3_get_response['Body'].read().decode('utf-8')
-		print(content)
+        s3_get_response = s3_client_.get_object(Bucket=bucket, Key=key)
+        content = s3_get_response['Body'].read().decode('utf-8')
+        print(content)
 
         if s3_get_response['ResponseMetadata']['HTTPStatusCode'] != 200:
             raise Exception('Unable to get data from S3: {0}'.format(s3_get_response))
@@ -49,4 +49,3 @@ def get_content_from_s3(s3_path, s3_client=None, s3_resource=None, region_name='
         return_object['data'] = exception_message
     finally:
         return return_object
-
