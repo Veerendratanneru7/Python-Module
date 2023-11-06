@@ -3,7 +3,7 @@ import sys
 import boto3
 
 	
-def put_content_to_s3(s3_path, content, s3_client=None, s3_resource=None, region_name='us-east-1', backup_key=None, backup_strategy='file'):
+def put_content_to_s3(s3_path, content, s3_client=None, s3_resource=None, region_name='us-east-1'):
 	return_object = {
 		'success' : True,
 		'data' : ''
@@ -25,7 +25,7 @@ def put_content_to_s3(s3_path, content, s3_client=None, s3_resource=None, region
 	finally:
 		return return_object
 		
-def get_content_from_s3(s3_path, content, s3_client=None, s3_resource=None, region_name='us-east-1', backup_key=None, backup_strategy='file'):
+def get_content_from_s3(s3_path, content, s3_client=None, s3_resource=None, region_name='us-east-1'):
 	return_object = {
 		'success' : True,
 		'data' : ''
