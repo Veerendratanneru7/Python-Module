@@ -19,16 +19,6 @@ class S3LogHandler(logging.Handler):
     def open_log_file(self):
         timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
         self.log_file = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
-        s3_path = self.log_file  # Assuming the log file path is used for S3
-        s3_client = boto3.client('s3', region_name='us-east-1')  # You can adjust the region as needed
-        s3_content = get_content_from_s3(s3_path, s3_client=s3_client)
-
-        # Now you can work with the S3 content
-        if s3_content['success']:
-            content_data = s3_content['data']
-            print("Content from S3:", content_data)
-        else:
-            print("Failed to retrieve content from S3:", s3_content['data'])
 
     def emit(self, record):
         if self.log_file is None:
