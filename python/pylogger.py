@@ -41,5 +41,5 @@ def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     return logger
 
 log_stringio_obj = io.StringIO()
-logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", "extensionlogs", "python-veeru")
+logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", "os.environ.get('S3_BUCKET')", "os.environ.get('LOG_FILE_NAME')")
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
