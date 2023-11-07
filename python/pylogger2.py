@@ -18,7 +18,7 @@ class S3LogHandler(logging.Handler):
         timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
         s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
         put_content_to_s3(s3_log_path, log_entry)
-        capture_request_id(None, None)  # Execute capture_request_id here
+        capture_request_id(event, context)  # Execute capture_request_id here
 
 def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
     logger = logging.getLogger(logger_name)
