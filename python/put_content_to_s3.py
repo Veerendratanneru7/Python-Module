@@ -3,7 +3,7 @@ import sys
 import boto3
 
 	
-def put_content_to_s3(s3_path, content, s3_client=None, s3_resource=None, region_name='us-east-1', append=False):
+def put_content_to_s3(s3_path, content, s3_client=None, s3_resource=None, region_name='us-east-1', append=True):
     return_object = {
         'success': True,
         'data': ''
