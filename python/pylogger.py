@@ -3,9 +3,15 @@ import os
 import sys
 import logging
 import time
+import boto3
 from datetime import datetime
 from put_content_to_s3 import put_content_to_s3
-from requestid import capture_request_id 
+
+def capture_request_id(context):
+    request_id = context.aws_request_id
+    s3_client = boto3.client('s3')
+    s3_client.put_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/{request_id}.txt', Body=request_id)
+    return request_id
 
 class S3LogHandler(logging.Handler):
     def __init__(self, s3_bucket, s3_prefix):
