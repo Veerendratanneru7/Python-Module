@@ -12,7 +12,9 @@ class S3LogHandler(logging.Handler):
         super().__init__()
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
-        capture_request_id(context)
+        1 = capture_request_id(context)
+        print(1)
+        print("Hi")
 
     def emit(self, record):
         log_entry = self.format(record)
