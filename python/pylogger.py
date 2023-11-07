@@ -5,7 +5,6 @@ import logging
 import time
 from datetime import datetime
 from put_content_to_s3 import put_content_to_s3
-from requestid import capture_request_id 
 
 class S3LogHandler(logging.Handler):
     def __init__(self, s3_bucket, s3_prefix):
