@@ -15,7 +15,7 @@ def capture_request_id(context):
     return request_id
 
 class S3LogHandler(logging.Handler):
-    def __init__(self, s3_bucket, s3_prefix, request_id):
+    def __init__(self, s3_bucket, s3_prefix):
         super().__init()
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
