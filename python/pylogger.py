@@ -19,7 +19,7 @@ class S3LogHandler(logging.Handler):
         s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/{timestamp}/logs.txt"
         put_content_to_s3(s3_log_path, log_entry)
 
-def get_string_io_logger(log_stringio_obj, logger_name, s3_bucket, s3_prefix):
+def get_string_io_logger(log_stringio_obj, logger_name):
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
