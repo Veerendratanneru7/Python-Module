@@ -19,15 +19,13 @@ class S3LogHandler(logging.Handler):
         super().__init()
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
-        self.request_id = request_id
-        print(self.request_id)
 
     def emit(self, record):
         log_entry = self.format(record)
         s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/logs.txt"
-        put_content_to_s3(s3_log_path, f"Request ID: {self.request_id}\n{log_entry}")
+        put_content_to_s3(s3_log_path, log_entry)
 
-def get_string_io_logger(log_stringio_obj, logger_name, request_id):
+def get_string_io_logger(log_stringio_obj, logger_name):
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
@@ -45,15 +43,11 @@ def get_string_io_logger(log_stringio_obj, logger_name, request_id):
     # Add the custom S3 handler with request_id
     s3_bucket = os.environ.get('S3_BUCKET')
     s3_prefix = os.environ.get('LOG_FILE_NAME')
-    s3_handler = S3LogHandler(s3_bucket, s3_prefix, request_id)
+    s3_handler = S3LogHandler(s3_bucket, s3_prefix)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
     return logger
 
-# Capture the request_id
-request_id = capture_request_id(context)
-
-# Create the logger and pass the request_id
 log_stringio_obj = io.StringIO()
-logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", request_id)
+logger = get_string_io_logger(log_stringio_obj, "my_s3_logger")
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
