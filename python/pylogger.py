@@ -12,6 +12,7 @@ def capture_request_id(context):
     s3_client = boto3.client('s3')
     s3_client.put_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/{request_id}.txt', Body=request_id)
     return request_id
+    print(request_id)
 
 class S3LogHandler(logging.Handler):
     def __init__(self, s3_bucket, s3_prefix):
