@@ -7,14 +7,10 @@ import boto3
 from datetime import datetime
 from put_content_to_s3 import put_content_to_s3
 
-global global_request_id
-
 def capture_request_id(context):
-    global global_request_id
     request_id = context.aws_request_id
     s3_client = boto3.client('s3')
-    s3_client.put_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/{request_id}.txt', Body=request_id)
-    global_request_id = request_id 
+    s3_client.put_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt', Body=request_id)
     return request_id
 
 class S3LogHandler(logging.Handler):
@@ -48,14 +44,18 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     s3_bucket = os.environ.get('S3_BUCKET')
     TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
     unix_epoch_timestamp = int(time.time())
-    #log_path = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/1/{unix_epoch_timestamp}.log"
+    
+    s3_client = boto3.client('s3')
+    corrid = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
+    print(corrid)
+
     s3_prefix = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['FUNCTION_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/1/{unix_epoch_timestamp}.log"
     print(s3_prefix)
-    global global_request_id
-    print("Request ID:", global_request_id)
+
     s3_handler = S3LogHandler(s3_bucket, s3_prefix)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
+
     return logger
 
 log_stringio_obj = io.StringIO()
