@@ -33,6 +33,7 @@ class S3LogHandler(logging.Handler):
             existing_log_content = ""
 
         # Construct the log entry using the custom JSON format
+        time_stamp = datetime.fromtimestamp(record.created).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         custom_log_format = {
             "functionName": os.environ.get('LAMBDA_NAME', 'UNKNOWN'),
             "corrId": s3_path(),
@@ -42,7 +43,7 @@ class S3LogHandler(logging.Handler):
             "trace_id": "undefined",
             "logLevel": record.levelname,
             "detail": log_entry,
-            "timestamp": self.formatTime(record),
+            "timestamp": time_stamp,
         }
 
         log_entry = json.dumps(custom_log_format)
