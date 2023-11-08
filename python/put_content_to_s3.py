@@ -1,58 +1,52 @@
+import io
 import os
 import sys
+import logging
+import time
 import boto3
+from datetime import datetime
+from put_content_to_s3 import put_content_to_s3
 
-	
-def put_content_to_s3(s3_path, content, s3_client=None, s3_resource=None, region_name='us-east-1', append=False):
-    return_object = {
-        'success': True,
-        'data': ''
-    }
-    try:
-        bucket = s3_path.split('/')[2]
-        key = '/'.join(s3_path.split('/')[3:])
-        if not s3_client:
-            s3_client_ = boto3.client('s3', region_name)
-        else:
-            s3_client_ = s3_client
-        
-        if append:
-            # Append data to an existing object in S3
-            s3_get_response = s3_client_.get_object(Bucket=bucket, Key=key)
-            existing_content = s3_get_response['Body'].read().decode('utf-8')
-            content = existing_content + content
-        
-        s3_put_response = s3_client_.put_object(Body=content, Bucket=bucket, Key=key)
-        if s3_put_response['ResponseMetadata']['HTTPStatusCode'] != 200:
-            raise Exception('Unable to put data to S3: {0}'.format(s3_put_response))
-    except Exception as e:
-        return_object['success'] = False
-        exception_message = "message: {0}\nline no:{1}\n".format(str(e), sys.exc_info()[2].tb_lineno)
-        return_object['data'] = exception_message
-    finally:
-        return return_object
-		
-def get_content_from_s3(s3_path, s3_client=None, s3_resource=None, region_name='us-east-1'):
-    return_object = {
-        'success': True,
-        'data': ''
-    }
-    try:
-        bucket = s3_path.split('/')[2]
-        key = '/'.join(s3_path.split('/')[3:])
-        if not s3_client:
-            s3_client_ = boto3.client('s3', region_name)
-        else:
-            s3_client_ = s3_client
-        s3_get_response = s3_client_.get_object(Bucket=bucket, Key=key)
-        content = s3_get_response['Body'].read().decode('utf-8')
-        print(content)
+class S3LogHandler(logging.Handler):
+    def __init__(self, s3_bucket):
+        super().__init__()
+        self.s3_bucket = s3_bucket
 
-        if s3_get_response['ResponseMetadata']['HTTPStatusCode'] != 200:
-            raise Exception('Unable to get data from S3: {0}'.format(s3_get_response))
-    except Exception as e:
-        return_object['success'] = False
-        exception_message = "message: {0}\nline no:{1}\n".format(str(e), sys.exc_info()[2].tb_lineno)
-        return_object['data'] = exception_message
-    finally:
-        return return_object
+    def emit(self, record):
+        log_entry = self.format(record)
+        s3_client = boto3.client('s3')
+        response = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
+        object_content = response['Body'].read().decode('utf-8')
+        TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
+        unix_epoch_timestamp = int(time.time())
+        s3_prefix = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['FUNCTION_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/{object_content}/{unix_epoch_timestamp}.log"
+        
+        s3_log_path = f"s3://{self.s3_bucket}/{s3_prefix}"
+        put_content_to_s3(s3_log_path, log_entry)
+
+def get_string_io_logger(log_stringio_obj, logger_name):
+        
+    logger = logging.getLogger(logger_name)
+    formatter = logging.Formatter(
+        "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
+    )
+    logger.setLevel(logging.DEBUG)
+
+    io_log_handler = logging.StreamHandler()
+    io_log_handler.setFormatter(formatter)
+    logger.addHandler(io_log_handler)
+
+    string_io_log_handler = logging.StreamHandler(log_stringio_obj)
+    string_io_log_handler.setFormatter(formatter)
+    logger.addHandler(string_io_log_handler)
+
+    # Add the custom S3 handler to automatically flush logs to S3
+    s3_bucket = os.environ.get('S3_BUCKET')
+    s3_handler = S3LogHandler(s3_bucket)
+    s3_handler.setFormatter(formatter)
+    logger.addHandler(s3_handler)
+    return logger
+
+log_stringio_obj = io.StringIO()
+logger = get_string_io_logger(log_stringio_obj, "my_s3_logger")
+timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
