@@ -5,7 +5,6 @@ import logging
 import time
 import boto3
 from datetime import datetime
-from put_content_to_s3 import put_content_to_s3
 
 def s3_path():
     s3_client = boto3.client('s3')
