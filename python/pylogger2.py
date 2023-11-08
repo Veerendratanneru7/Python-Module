@@ -7,6 +7,8 @@ import boto3
 from datetime import datetime
 from put_content_to_s3 import put_content_to_s3
 
+global global_request_id
+
 def capture_request_id(context):
     global global_request_id
     request_id = context.aws_request_id
