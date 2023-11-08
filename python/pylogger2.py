@@ -5,7 +5,6 @@ import logging
 import time
 import boto3
 from datetime import datetime
-from put_content_to_s3 import put_content_to_s3
 
 class S3LogHandler(logging.Handler):
     def __init__(self, s3_bucket):
