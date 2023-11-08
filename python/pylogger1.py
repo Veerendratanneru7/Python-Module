@@ -50,7 +50,7 @@ class S3LogHandler(logging.Handler):
         log_entry = json.dumps(custom_log_format)
 
         # Append the log entry to the existing content
-        log_entry = existing_log_content + log_entry
+        log_entry = existing_log_content + "\n" + log_entry
 
         # Upload the updated log content to S3
         s3_client = boto3.client('s3')
