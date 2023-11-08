@@ -15,9 +15,19 @@ class S3LogHandler(logging.Handler):
 
     def emit(self, record):
         log_entry = self.format(record)
-        #timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-        s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/logs.txt"
-        put_content_to_s3(s3_log_path, log_entry)
+        request_id = record.request_id if hasattr(record, 'request_id') else 'unknown'
+        try:
+            response = s3_client.get_object(Bucket=self.s3_bucket, Key=self.s3_prefix)
+            existing_log_content = response['Body'].read().decode('utf-8')
+        except s3_client.exceptions.NoSuchKey:
+            existing_log_content = ""
+
+        # Append the log entry to the existing content
+        log_entry = existing_log_content + log_entry
+
+        # Upload the updated log content to S3
+        s3_client.put_object(Bucket=self.s3_bucket, Key=self.s3_prefix, Body=log_entry)
+
 
 def get_string_io_logger(log_stringio_obj, logger_name):
     logger = logging.getLogger(logger_name)
