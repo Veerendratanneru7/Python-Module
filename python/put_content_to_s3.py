@@ -7,7 +7,7 @@ import boto3
 from datetime import datetime
 from put_content_to_s3 import put_content_to_s3
 
-def s3_path:
+def s3_path():
     s3_client = boto3.client('s3')
     response = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
     object_content = response['Body'].read().decode('utf-8')
