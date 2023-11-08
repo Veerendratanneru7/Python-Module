@@ -8,23 +8,25 @@ from datetime import datetime
 from put_content_to_s3 import put_content_to_s3
 
 class S3LogHandler(logging.Handler):
-    def __init__(self, s3_bucket, s3_prefix):
+    def __init__(self, s3_bucket):
         super().__init__()
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
 
     def emit(self, record):
         log_entry = self.format(record)
-        #timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-        s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}"
+        s3_client = boto3.client('s3')
+        response = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
+        object_content = response['Body'].read().decode('utf-8')
+        TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
+        unix_epoch_timestamp = int(time.time())
+        s3_prefix = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['FUNCTION_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/{object_content}/{unix_epoch_timestamp}.log"
+        
+        s3_log_path = f"s3://{self.s3_bucket}/{s3_prefix}"
         put_content_to_s3(s3_log_path, log_entry)
 
 def get_string_io_logger(log_stringio_obj, logger_name):
-    time.sleep(10)
-    s3_client = boto3.client('s3')
-    response = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
-    object_content = response['Body'].read().decode('utf-8')
-    
+        
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
@@ -41,11 +43,7 @@ def get_string_io_logger(log_stringio_obj, logger_name):
 
     # Add the custom S3 handler to automatically flush logs to S3
     s3_bucket = os.environ.get('S3_BUCKET')
-    TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
-    unix_epoch_timestamp = int(time.time())
-    #log_path = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/1/{unix_epoch_timestamp}.log"
-    s3_prefix = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['FUNCTION_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/{object_content}/{unix_epoch_timestamp}.log"
-    s3_handler = S3LogHandler(s3_bucket, s3_prefix)
+    s3_handler = S3LogHandler(s3_bucket)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
     return logger
