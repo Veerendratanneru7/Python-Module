@@ -13,6 +13,13 @@ def capture_request_id(context):
     s3_client.put_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/{request_id}.txt', Body=request_id)
     os.environ['REQUEST_ID'] = request_id
     return request_id
+    
+def s3_log_structure:
+    TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
+    unix_epoch_timestamp = int(time.time())
+    log_path = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/{request_id}/{unix_epoch_timestamp}.log"
+    print(log_path)
+
 
 class S3LogHandler(logging.Handler):
     def __init__(self, s3_bucket, s3_prefix):
