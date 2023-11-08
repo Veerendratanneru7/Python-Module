@@ -21,7 +21,7 @@ class S3LogHandler(logging.Handler):
         super().__init__()
         self.s3_bucket = s3_bucket
 
-    def emit(self, record, s3_path):
+    def emit(self, record):
         log_entry = self.format(record)
         request_id = record.request_id if hasattr(record, 'request_id') else 'unknown'
         try:
@@ -58,7 +58,6 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     # Add the custom S3 handler to automatically flush logs to S3
     s3_bucket = os.environ.get('S3_BUCKET')
     s3_handler = S3LogHandler(s3_bucket)
-    s3_handler.emit("record", s3_path)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
     return logger
