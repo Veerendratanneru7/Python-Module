@@ -43,6 +43,8 @@ def get_string_io_logger(log_stringio_obj, logger_name):
 
     # Add the custom S3 handler to automatically flush logs to S3
     s3_bucket = os.environ.get('S3_BUCKET')
+    TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
+    unix_epoch_timestamp = int(time.time())
     #log_path = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/1/{unix_epoch_timestamp}.log"
     s3_prefix = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/1/{unix_epoch_timestamp}.log"
     print(s3_prefix)
