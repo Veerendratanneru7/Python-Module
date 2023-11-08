@@ -14,15 +14,6 @@ def capture_request_id(context):
     os.environ['REQUEST_ID'] = request_id
     return request_id
 
-class structure(logging.Handler)    
-    def s3_log_structure():
-        TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
-        unix_epoch_timestamp = int(time.time())
-        #log_path = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/{request_id}/{unix_epoch_timestamp}.log"
-        log_path = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/1/{unix_epoch_timestamp}.log"
-        print(log_path)
-
-
 class S3LogHandler(logging.Handler):
     def __init__(self, s3_bucket, s3_prefix):
         super().__init__()
@@ -52,7 +43,8 @@ def get_string_io_logger(log_stringio_obj, logger_name):
 
     # Add the custom S3 handler to automatically flush logs to S3
     s3_bucket = os.environ.get('S3_BUCKET')
-    s3_prefix = os.environ.get('LOG_FILE_NAME')
+    #log_path = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/1/{unix_epoch_timestamp}.log"
+    s3_prefix = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/1/{unix_epoch_timestamp}.log"
     s3_handler = S3LogHandler(s3_bucket, s3_prefix)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
