@@ -4,6 +4,7 @@ import sys
 import logging
 import time
 import boto3
+import json
 from datetime import datetime
 
 TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
