@@ -15,15 +15,16 @@ def capture_request_id(context):
     return request_id
 
 class S3LogHandler(logging.Handler):
-    def __init__(self, s3_bucket, s3_prefix):
+    def __init__(self, s3_bucket, s3_prefix, corrid):
         super().__init__()
         self.s3_bucket = s3_bucket
         self.s3_prefix = s3_prefix
+        self.corrid = corrid
 
     def emit(self, record):
         log_entry = self.format(record)
         #timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
-        s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/os.environ['REQUEST_ID']/logs.txt"
+        s3_log_path = f"s3://{self.s3_bucket}/{self.s3_prefix}/{self.corrid}/logs.txt"
         put_content_to_s3(s3_log_path, log_entry)
 
 def get_string_io_logger(log_stringio_obj, logger_name):
@@ -44,7 +45,8 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     # Add the custom S3 handler to automatically flush logs to S3
     s3_bucket = os.environ.get('S3_BUCKET')
     s3_prefix = os.environ.get('LOG_FILE_NAME')
-    s3_handler = S3LogHandler(s3_bucket, s3_prefix)
+    corrid = os.environ['REQUEST_ID']
+    s3_handler = S3LogHandler(s3_bucket, s3_prefix, corrid)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
     return logger
