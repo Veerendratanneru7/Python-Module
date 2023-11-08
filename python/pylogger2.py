@@ -20,6 +20,12 @@ class S3LogHandler(logging.Handler):
         put_content_to_s3(s3_log_path, log_entry)
 
 def get_string_io_logger(log_stringio_obj, logger_name):
+    time.sleep(3)
+    s3_client = boto3.client('s3')
+    response = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
+    object_content = response['Body'].read().decode('utf-8')
+    print(object_content)
+    
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
         "%(asctime)s %(levelname)s \t[%(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
