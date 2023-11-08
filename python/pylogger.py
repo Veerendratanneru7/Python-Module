@@ -17,6 +17,7 @@ class S3LogHandler(logging.Handler):
         log_entry = self.format(record)
         request_id = record.request_id if hasattr(record, 'request_id') else 'unknown'
         try:
+            s3_client = boto3.client('s3')
             response = s3_client.get_object(Bucket=self.s3_bucket, Key=self.s3_prefix)
             existing_log_content = response['Body'].read().decode('utf-8')
         except s3_client.exceptions.NoSuchKey:
@@ -26,6 +27,7 @@ class S3LogHandler(logging.Handler):
         log_entry = existing_log_content + log_entry
 
         # Upload the updated log content to S3
+        s3_client = boto3.client('s3')
         s3_client.put_object(Bucket=self.s3_bucket, Key=self.s3_prefix, Body=log_entry)
 
 
