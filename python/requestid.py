@@ -1,3 +1,6 @@
+import boto3
+import os
+
 def capture_request_id(context):
     request_id = context.aws_request_id
     s3_client = boto3.client('s3')
