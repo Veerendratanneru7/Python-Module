@@ -6,14 +6,14 @@ import time
 import boto3
 from datetime import datetime
 
+TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
+unix_epoch_timestamp = int(time.time())
+
 def s3_path():
     s3_client = boto3.client('s3')
     response = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
     object_content = response['Body'].read().decode('utf-8')
-    TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
-    unix_epoch_timestamp = int(time.time())
     s3_path = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['FUNCTION_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/{object_content}/{unix_epoch_timestamp}.log"
-    print(s3_path)
     return s3_path
 
 class S3LogHandler(logging.Handler):
