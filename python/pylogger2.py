@@ -51,5 +51,5 @@ def get_string_io_logger(log_stringio_obj, logger_name, context):
     return logger
 
 log_stringio_obj = io.StringIO()
-logger = get_string_io_logger(log_stringio_obj, "my_s3_logger",context)
+logger = get_string_io_logger(log_stringio_obj, "my_s3_logger", context)
 timestamp = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H%M%S")
