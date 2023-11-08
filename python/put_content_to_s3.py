@@ -58,7 +58,7 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     # Add the custom S3 handler to automatically flush logs to S3
     s3_bucket = os.environ.get('S3_BUCKET')
     s3_handler = S3LogHandler(s3_bucket)
-    s3_handler.emit(record, s3_path)
+    s3_handler.emit("record", s3_path)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
     return logger
