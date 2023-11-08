@@ -12,6 +12,7 @@ def capture_request_id(context):
     s3_client = boto3.client('s3')
     response = s3_client.put_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt', Body=request_id)
     print(request_id)
+    print(response)
     return request_id
 
 class S3LogHandler(logging.Handler):
@@ -47,8 +48,8 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     unix_epoch_timestamp = int(time.time())
     
     s3_client = boto3.client('s3')
-    corrid = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
-    print(corrid)
+    #corrid = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
+    #print(corrid)
 
     s3_prefix = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['FUNCTION_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/1/{unix_epoch_timestamp}.log"
     print(s3_prefix)
