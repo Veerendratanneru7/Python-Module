@@ -14,6 +14,7 @@ def s3_path:
     TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
     unix_epoch_timestamp = int(time.time())
     s3_path = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['FUNCTION_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/{object_content}/{unix_epoch_timestamp}.log"
+    print(s3_path)
     return s3_path
 
 class S3LogHandler(logging.Handler):
@@ -21,10 +22,23 @@ class S3LogHandler(logging.Handler):
         super().__init__()
         self.s3_bucket = s3_bucket
 
-    def emit(self, record):
-        log_entry = self.format(record)        
-        s3_log_path = f"s3://{self.s3_bucket}/{s3_path}"
-        put_content_to_s3(s3_log_path, log_entry)
+    def emit(self, record, s3_path):
+        log_entry = self.format(record)
+        request_id = record.request_id if hasattr(record, 'request_id') else 'unknown'
+        try:
+            s3_client = boto3.client('s3')
+            response = s3_client.get_object(Bucket=self.s3_bucket, Key=s3_path)
+            existing_log_content = response['Body'].read().decode('utf-8')
+        except s3_client.exceptions.NoSuchKey:
+            existing_log_content = ""
+
+        # Append the log entry to the existing content
+        log_entry = existing_log_content + log_entry
+
+        # Upload the updated log content to S3
+        s3_client = boto3.client('s3')
+        s3_client.put_object(Bucket=self.s3_bucket, Key=s3_path, Body=log_entry)
+
 
 def get_string_io_logger(log_stringio_obj, logger_name):
         
