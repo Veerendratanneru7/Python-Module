@@ -1,9 +1,15 @@
-import boto3
 import os
 
 def capture_request_id(context):
     request_id = context.aws_request_id
-    s3_client = boto3.client('s3')
-    s3_client.put_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/{request_id}.txt', Body=request_id)
-    return request_id
+    os.environ['REQUEST_ID'] = request_id
 
+# Automatically capture the request ID when the layer is loaded
+import boto3
+lambda_client = boto3.client('lambda')
+this_lambda_arn = os.environ['AWS_LAMBDA_FUNCTION_NAME']
+this_lambda_response = lambda_client.get_function(
+    FunctionName=this_lambda_arn,
+)
+this_lambda_context = this_lambda_response['Configuration']['FunctionArn']
+capture_request_id(this_lambda_context)
