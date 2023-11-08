@@ -24,7 +24,6 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     s3_client = boto3.client('s3')
     response = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
     object_content = response['Body'].read().decode('utf-8')
-    print(object_content)
     
     logger = logging.getLogger(logger_name)
     formatter = logging.Formatter(
@@ -45,7 +44,7 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
     unix_epoch_timestamp = int(time.time())
     #log_path = f"logs/os.environ['APP_CAT_ID']/os.environ['FUNCTION_NAME']/{TIMESTAMP}/os.environ['LAMBDA_NAME']/1/{unix_epoch_timestamp}.log"
-    s3_prefix = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['FUNCTION_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/1/{unix_epoch_timestamp}.log"
+    s3_prefix = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['FUNCTION_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/{object_content}/{unix_epoch_timestamp}.log"
     s3_handler = S3LogHandler(s3_bucket, s3_prefix)
     s3_handler.setFormatter(formatter)
     logger.addHandler(s3_handler)
