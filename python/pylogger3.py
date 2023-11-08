@@ -28,7 +28,7 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     logger.addHandler(string_io_log_handler)
 
     # call get_logs to send logs to S3 when the logger is created
-    get_logs(log_stringio_obj)
+    get_logs(pylogger3.log_stringio_obj)
 
     return logger
 
