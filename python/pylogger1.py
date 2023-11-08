@@ -35,9 +35,11 @@ class S3LogHandler(logging.Handler):
 
         # Construct the log entry using the custom JSON format
         time_stamp = datetime.fromtimestamp(record.created).strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        s3_path_value = s3_path()
+        corrId = s3_path_value.split('/')[-2]
         custom_log_format = {
             "functionName": os.environ.get('LAMBDA_NAME', 'UNKNOWN'),
-            "corrId": s3_path(),
+            "corrId": corrId,
             "serviceName": os.environ.get('SERVICE_NAME', 'UNKNOWN'),
             "appCatId": os.environ.get('APP_CAT_ID', 'UNKNOWN'),
             "span_id": "undefined",
