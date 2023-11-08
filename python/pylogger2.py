@@ -11,7 +11,6 @@ class S3LogHandler(logging.Handler):
     def __init__(self, s3_bucket):
         super().__init__()
         self.s3_bucket = s3_bucket
-        self.s3_prefix = s3_prefix
 
     def emit(self, record):
         log_entry = self.format(record)
