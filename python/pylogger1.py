@@ -66,7 +66,7 @@ def get_string_io_logger(log_stringio_obj, logger_name):
     s3_bucket = os.environ.get('S3_BUCKET')
     s3_handler = S3LogHandler(s3_bucket)
     logger.addHandler(s3_handler)
-    #return logger
+    return logger
 
 log_stringio_obj = io.StringIO()
 logger = get_string_io_logger(log_stringio_obj, "my_s3_logger")
