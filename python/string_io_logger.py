@@ -5,9 +5,6 @@ import logging
 import time
 from datetime import datetime
 
-from put_content_to_s3 import put_content_to_s3
-
-
 def get_string_io_logger(log_stringio_obj, logger_name):
     # create logger
     logger = logging.getLogger(logger_name)
