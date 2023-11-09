@@ -11,9 +11,12 @@ TIMESTAMP = datetime.fromtimestamp(time.time()).strftime("%Y%m%d%H")
 unix_epoch_timestamp = int(time.time())
 
 def s3_path():
+    #capture the aws requestid from s3 bucket pushed from requestid file and set it to object content
     s3_client = boto3.client('s3')
     response = s3_client.get_object(Bucket=os.environ['S3_BUCKET'], Key=f'request-ids/id.txt')
     object_content = response['Body'].read().decode('utf-8')
+
+    #set the s3 path according to the requirement
     s3_path = f"logs/{os.environ['APP_CAT_ID']}/{os.environ['SERVICE_NAME']}/{TIMESTAMP}/{os.environ['LAMBDA_NAME']}/{object_content}/{unix_epoch_timestamp}.log"
     return s3_path
 
@@ -27,6 +30,7 @@ class S3LogHandler(logging.Handler):
         request_id = getattr(record, 'request_id', 'unknown')
 
         try:
+            #check if the data already exist in s3 bucket with same request id
             s3_client = boto3.client('s3')
             response = s3_client.get_object(Bucket=self.s3_bucket, Key=s3_path())
             existing_log_content = response['Body'].read().decode('utf-8')
